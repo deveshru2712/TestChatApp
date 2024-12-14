@@ -1,9 +1,14 @@
 import express from "express";
+
+import connectToDb from "./Db/Db.js";
+import authRouter from "./Routes/auth.routes.js";
+
 import { createServer } from "http";
 import { Server } from "socket.io";
 
 import cors from "cors";
 import dotenv from "dotenv";
+import errorHandler from "./Middleware/errorMiddleware.js";
 
 dotenv.config();
 
@@ -35,6 +40,11 @@ app.get("/", (req, res) => {
   res.send("hii there");
 });
 
+app.use("/api/auth", authRouter);
+
+app.use(errorHandler);
+
 httpServer.listen(PORT, () => {
+  connectToDb();
   console.log("the server is running on the port:", PORT);
 });
