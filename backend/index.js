@@ -1,50 +1,37 @@
+//dependencies
+
 import express from "express";
-
-import connectToDb from "./Db/Db.js";
-import authRouter from "./Routes/auth.routes.js";
-
-import { createServer } from "http";
-import { Server } from "socket.io";
-
 import cors from "cors";
 import dotenv from "dotenv";
+
+//file import
+import { server, app } from "./Socket/socket.js";
 import errorHandler from "./Middleware/errorMiddleware.js";
 
+//db function import
+import connectToDb from "./Db/Db.js";
+
+//routes import
+import authRouter from "./Routes/auth.routes.js";
+import messageRouter from "./Routes/message.routes.js";
+
 dotenv.config();
-
-const app = express();
-const httpServer = createServer(app);
-
-const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
 
 app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT;
 
-io.on("connection", (socket) => {
-  console.log("A new member just connected:", socket.id);
-
-  socket.on("send-message", (message) => {
-    socket.broadcast.emit("receive-message", message);
-  });
-});
-
 app.get("/", (req, res) => {
   res.send("hii there");
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/message", messageRouter);
 
 app.use(errorHandler);
 
-httpServer.listen(PORT, () => {
+server.listen(PORT, () => {
   connectToDb();
   console.log("the server is running on the port:", PORT);
 });
