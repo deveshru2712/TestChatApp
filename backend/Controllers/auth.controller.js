@@ -1,4 +1,3 @@
-import userModel from "../Models/user.models.js";
 import userModels from "../Models/user.models.js";
 import bcrypt from "bcrypt";
 import genToken from "../Utils/genToken.js";
